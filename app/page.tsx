@@ -10,6 +10,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [nextNews, setNextNews] = useState<any>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
+  const retryTimeoutRef = useRef<NodeJS.Timeout>();
 
   // 预加载下一条新闻
   const preloadNextNews = useCallback(async () => {
@@ -34,11 +35,9 @@ export default function Home() {
     setError(null);
 
     try {
-      // 如果有预加载的新闻，直接使用
       if (nextNews) {
         setNews(prev => [...prev, nextNews]);
         setNextNews(null);
-        // 开始预加载下一条
         preloadNextNews();
       } else {
         const newsItem = await generateNews();
@@ -48,19 +47,37 @@ export default function Home() {
             title: newsItem.title,
             imageUrl: newsItem.image,
           }]);
-          // 加载完当前新闻后预加载下一条
           preloadNextNews();
         } else {
-          setError('无法加载新闻内容');
+          throw new Error('无法加载新闻内容');
         }
       }
     } catch (error) {
       console.error('Failed to load news:', error);
       setError('加载失败，请稍后重试');
+      
+      // 清除之前的重试计时器
+      if (retryTimeoutRef.current) {
+        clearTimeout(retryTimeoutRef.current);
+      }
+      
+      // 设置新的重试计时器
+      retryTimeoutRef.current = setTimeout(() => {
+        loadOneNews();
+      }, 5000); // 5秒后自动重试
     } finally {
       setIsLoading(false);
     }
   }, [isLoading, nextNews, preloadNextNews]);
+
+  // 清理函数
+  useEffect(() => {
+    return () => {
+      if (retryTimeoutRef.current) {
+        clearTimeout(retryTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // 初始加载
   useEffect(() => {
@@ -86,7 +103,7 @@ export default function Home() {
   }, [loadOneNews, isLoading]);
 
   return (
-    <main className="bg-gray-100">
+    <main className="min-h-screen bg-gray-100">
       <div className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-sm z-10 border-b">
         <h1 className="text-2xl sm:text-3xl font-bold text-center py-3">
           让人清醒的小报
@@ -105,9 +122,9 @@ export default function Home() {
         </div>
       )}
       
-      <div className="snap-y snap-mandatory h-screen overflow-y-auto">
+      <div className="snap-y snap-mandatory h-screen overflow-y-auto pt-14">
         {news.map((item, index) => (
-          <div key={item.id} className="snap-start h-screen pt-14">
+          <div key={item.id} className="snap-start h-screen">
             <NewsCard
               title={item.title}
               imageUrl={item.imageUrl}
@@ -115,6 +132,16 @@ export default function Home() {
             />
           </div>
         ))}
+        
+        {news.length === 0 && !error && (
+          <div className="h-screen flex items-center justify-center">
+            <div className="flex flex-col items-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mb-2" />
+              <div className="text-gray-600">正在加载第一条新闻...</div>
+            </div>
+          </div>
+        )}
+        
         <div 
           ref={loadMoreRef} 
           className="h-20 flex items-center justify-center"
