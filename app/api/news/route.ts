@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
 
+// 硬编码配置
+const API_URL = 'https://api.coze.cn/v1/workflow/run';
 const WORKFLOW_ID = '7461917058494726180';
 const API_TOKEN = 'pat_hm3RF3EdI6wwInPJHq58kBGgfOC0zf8TaUVIYlz8ofGtAcSxhxTvzEHZIsidhmzA';
 
 export async function POST() {
   try {
-    console.log('Fetching from Coze API...');
-    
-    const response = await fetch('https://api.coze.cn/v1/workflow/run', {
+    const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -19,18 +19,12 @@ export async function POST() {
       })
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
     const data = await response.json();
-    console.log('Raw API Response:', data);
-
+    
     if (!data.data) {
       throw new Error('No data in API response');
     }
 
-    // 返回原始的字符串数据
     return NextResponse.json({
       code: 0,
       data: data.data

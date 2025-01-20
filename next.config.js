@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   images: {
     remotePatterns: [
       {
@@ -24,6 +25,20 @@ const nextConfig = {
         ],
       },
     ];
+  },
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: ['@mui/icons-material', '@mui/material'],
+  },
+  env: {
+    NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || '',
+  },
+  compress: true,
+  poweredByHeader: false,
+  generateEtags: true,
+  onDemandEntries: {
+    maxInactiveAge: 60 * 60 * 1000,
+    pagesBufferLength: 2,
   },
 }
 
