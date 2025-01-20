@@ -103,9 +103,9 @@ export default function Home() {
   }, [loadOneNews, isLoading]);
 
   return (
-    <main className="min-h-screen bg-gray-100">
+    <main className="min-h-screen bg-gray-50">
       <div className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-sm z-10 border-b">
-        <h1 className="text-2xl sm:text-3xl font-bold text-center py-3">
+        <h1 className="text-2xl font-bold text-center py-4">
           让人清醒的小报
         </h1>
       </div>
@@ -122,7 +122,7 @@ export default function Home() {
         </div>
       )}
       
-      <div className="snap-y snap-mandatory h-screen overflow-y-auto pt-14">
+      <div className="snap-y snap-mandatory h-screen overflow-y-auto">
         {news.map((item, index) => (
           <div key={item.id} className="snap-start h-screen">
             <NewsCard

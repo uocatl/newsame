@@ -41,22 +41,22 @@ const NewsCard: React.FC<NewsCardProps> = ({ title, imageUrl, index }) => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6">
+    <div className="h-screen w-full flex flex-col items-center justify-center px-4">
       <div 
-        className="w-full max-w-lg bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow duration-300"
+        className="w-full max-w-md bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow duration-300"
         onClick={handleClick}
       >
-        <div className="p-4 sm:p-6">
-          <h2 className="text-lg sm:text-xl font-bold mb-4 text-gray-800">
+        <div className="p-6">
+          <h2 className="text-xl font-bold mb-6 text-gray-800">
             {title || '加载中...'}
           </h2>
-          <div className="relative w-full aspect-square bg-gray-100 rounded-lg overflow-hidden">
+          <div className="relative w-full aspect-square bg-gray-100 rounded-xl overflow-hidden mb-4">
             {!imageError && imageUrl ? (
               <Image
                 src={imageUrl}
                 alt={title || `新闻图片 ${index}`}
                 fill
-                className={`object-contain transition-opacity duration-300 ${
+                className={`object-cover transition-opacity duration-300 ${
                   isLoading ? 'opacity-0' : 'opacity-100'
                 }`}
                 onError={() => {
@@ -79,11 +79,11 @@ const NewsCard: React.FC<NewsCardProps> = ({ title, imageUrl, index }) => {
               </div>
             )}
           </div>
-          <div className="mt-4 text-sm text-gray-500">小报 {index}</div>
+          <div className="text-sm text-gray-500 text-center">点击查看相关故事</div>
         </div>
       </div>
 
-      <div className="mt-4 text-sm text-gray-500 animate-bounce">
+      <div className="mt-6 text-sm text-gray-500 animate-bounce">
         ↓ 上滑查看下一条 ↓
       </div>
 
